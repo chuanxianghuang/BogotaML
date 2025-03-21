@@ -1,0 +1,92 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <UseWPF>true</UseWPF>
+        <LangVersion>latest</LangVersion>
+        <PlatformTarget>x64</PlatformTarget>
+        <ImplicitUsings>true</ImplicitUsings>
+        <PublishAddinFiles>true</PublishAddinFiles>
+		
+        <Configurations>Debug R20;Debug R21;Debug R22;Debug R23;Debug R24;Debug R25</Configurations>
+        <Configurations>$(Configurations);Release R20;Release R21;Release R22;Release R23;Release R24;Release R25</Configurations>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$(Configuration.Contains('R20'))">
+        <RevitVersion>2020</RevitVersion>
+        <TargetFramework>net48</TargetFramework>
+		<TargetFrameworkCustomize>net47</TargetFrameworkCustomize>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(Configuration.Contains('R21'))">
+        <RevitVersion>2021</RevitVersion>
+        <TargetFramework>net48</TargetFramework>
+		<TargetFrameworkCustomize>net48</TargetFrameworkCustomize>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(Configuration.Contains('R22'))">
+        <RevitVersion>2022</RevitVersion>
+        <TargetFramework>net48</TargetFramework>
+		<TargetFrameworkCustomize>net48</TargetFrameworkCustomize>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(Configuration.Contains('R23'))">
+        <RevitVersion>2023</RevitVersion>
+        <TargetFramework>net48</TargetFramework>
+		<TargetFrameworkCustomize>net48</TargetFrameworkCustomize>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(Configuration.Contains('R24'))">
+        <RevitVersion>2024</RevitVersion>
+        <TargetFramework>net48</TargetFramework>
+		<TargetFrameworkCustomize>net48</TargetFrameworkCustomize>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(Configuration.Contains('R25'))">
+        <RevitVersion>2025</RevitVersion>
+        <TargetFramework>net8.0-windows</TargetFramework>
+		<TargetFrameworkCustomize>net8.0</TargetFrameworkCustomize>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <StartAction>Program</StartAction>
+        <StartProgram>C:\Program Files\Autodesk\Revit $(RevitVersion)\Revit.exe</StartProgram>
+        <StartArguments>/language ENG D:\\波哥大项目\\L1T1-1450-306-CON-ED-ELB-MO-0001_VEE_已分离.rvt</StartArguments>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Icons\MEPSystem16.png" />
+      <None Remove="Resources\Icons\MEPSystem32.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Nice3point.Revit.Build.Tasks" Version="2.*" />
+        <PackageReference Include="Nice3point.Revit.Toolkit" Version="$(RevitVersion).*" />
+        <PackageReference Include="Nice3point.Revit.Extensions" Version="$(RevitVersion).*" />
+        <PackageReference Include="Nice3point.Revit.Api.RevitAPI" Version="$(RevitVersion).*" GeneratePathProperty="true" />
+        <PackageReference Include="Nice3point.Revit.Api.RevitAPIUI" Version="$(RevitVersion).*" />
+		<PackageReference Include="Nice3point.Revit.Api.AdWindows" Version="$(RevitVersion).*" />
+
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.*" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Resource Include="Resources\Icons\MEPSystem16.png" />
+        <Resource Include="Resources\Icons\MEPSystem32.png" />
+        <Resource Include="Resources\Icons\RibbonIcon16.png" />
+        <Resource Include="Resources\Icons\RibbonIcon32.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Models" />
+    </ItemGroup>
+
+	<PropertyGroup>
+		<ReactorLocation>"C:\Program Files (x86)\Eziriz\.NET Reactor\dotNET_Reactor.exe"</ReactorLocation>
+		<ReactorProject>"Template.nrproj"</ReactorProject>
+	</PropertyGroup>
+
+	<Target Name="PrintNuGetPath" BeforeTargets="Build">
+		<!-- 直接输出 NuGet 包路径 -->
+		<Message Importance="high" Text="NuGet Packages Root: $(PkgNice3point_Revit_Api_RevitAPI)" />
+	</Target>
+
+	<Target Name="obfuscated" AfterTargets="AfterCompile" Condition="$(Configuration.Contains('Release'))">
+		<Copy SourceFiles="$(PkgNice3point_Revit_Api_RevitAPI)\ref\$(TargetFrameworkCustomize)\RevitAPI.dll" DestinationFolder="$(ProjectDir)$(BaseIntermediateOutputPath)$(Configuration)" />
+		<Exec Command="$(ReactorLocation) -file &quot;$(ProjectDir)$(IntermediateOutputPath)$(TargetFileName)&quot; -project $(ReactorProject) -targetfile &quot;$(ProjectDir)$(IntermediateOutputPath)$(TargetFileName)&quot;" />
+	</Target>
+</Project>
