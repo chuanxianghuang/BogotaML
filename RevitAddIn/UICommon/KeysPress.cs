@@ -81,7 +81,7 @@ namespace RevitAddIn.UICommon
         {
             for (int i = 0; i < 2; i++)
             {
-               // PostMessage(ComponentManager.ApplicationWindow, (uint)KEYBOARD_MSG.WM_KEYDOWN, (uint)Keys.Escape, 0);
+                PostMessage(ComponentManager.ApplicationWindow, (uint)KEYBOARD_MSG.WM_KEYDOWN, (uint)Keys.Escape, 0);
             }
         }
     }

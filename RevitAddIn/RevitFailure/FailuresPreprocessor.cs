@@ -35,7 +35,7 @@ namespace RevitAddIn.RevitFailure
             doc.PostFailure(failureMessage);
            
             trans.Commit();
-            //trans.Dispose();
+  
             //#endif
         }
     }

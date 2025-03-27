@@ -10,13 +10,7 @@ namespace RevitAddIn.ExtensionsUtils
     {
         public static List<Connector> ToList(this ConnectorSet connectorSet)
         {
-            var connectors = new List<Connector>();
-            foreach (Connector connector in connectorSet)
-            {
-                connectors.Add(connector);
-            }
-
-            return connectors;
+            return connectorSet.Cast<Connector>().ToList();
         }
     }
 }

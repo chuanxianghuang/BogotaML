@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaskDialog = Autodesk.Revit.UI.TaskDialog;
 
 namespace RevitAddIn.Commands
 {
@@ -20,7 +21,6 @@ namespace RevitAddIn.Commands
         {
             try
             {
-                Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-us");
 
                 var elemSelectionFilter = new ElementSelectionFilter((elem) =>
                 {
@@ -110,6 +110,9 @@ namespace RevitAddIn.Commands
                         targetConnector1.ConnectTo(targetConnector2);
                     }
 
+                    (instance2.Location as LocationPoint).Point =
+                        new XYZ(targetConnector1.Origin.X, targetConnector1.Origin.Y, instance2.GetLocation().Z);
+                   
                     trans.Commit();
 
                     TaskDialog.Show("Electrical Equipment", tip);

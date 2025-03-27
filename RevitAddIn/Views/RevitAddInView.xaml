@@ -1,22 +1,21 @@
-﻿<Window
-    x:Class="RevitAddIn.Views.RevitAddInView"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:viewModel="clr-namespace:RevitAddIn.ViewModels"
-    mc:Ignorable="d"
-    d:DataContext="{d:DesignInstance viewModel:RevitAddInViewModel}"
-    ResizeMode="NoResize"
-    WindowStartupLocation="CenterScreen"
-    Title="RevitAddIn"
-    Height="450"
-    Width="800">
+﻿<Window x:Class="RevitAddIn.Views.RevitAddInView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:viewModel="clr-namespace:RevitAddIn.ViewModels"
+        Title="RevitAddIn"
+        Width="800"
+        Height="450"
+        d:DataContext="{d:DesignInstance viewModel:RevitAddInViewModel}"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d">
     <Grid>
-        <TextBlock
-            Text="RevitAddIn"
-            FontSize="60"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center" />
+        <Button HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Content="RevitAddIn"
+                FontSize="60"
+                Command="{Binding TestCommand}" />
     </Grid>
 </Window>

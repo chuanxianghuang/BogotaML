@@ -18,8 +18,8 @@ sealed partial class Build
                 var directories = Directory.GetDirectories(project.Directory, "* Release *", SearchOption.AllDirectories);
                 Assert.NotEmpty(directories, "No files were found to create a bundle");
 
-                var bundleRoot = ArtifactsDirectory / project.Name;
-                var bundlePath = bundleRoot / $"{project.Name}.bundle";
+                //var bundleRoot = ArtifactsDirectory / project.Name;
+                var bundlePath = ArtifactsDirectory / $"{project.Name}.bundle";
                 var manifestPath = bundlePath / "PackageContents.xml";
                 var contentsDirectory = bundlePath / "Contents";
                 foreach (var path in directories)
@@ -31,12 +31,13 @@ sealed partial class Build
                 }
 
                 GenerateManifest(project, directories, manifestPath);
-                CompressFolder(bundleRoot);
+                CompressFolder(bundlePath);
             }
         });
 
     void GenerateManifest(Project project, string[] directories, AbsolutePath manifestDirectory)
     {
+       
         BuilderUtils.Build<PackageContentsBuilder>(builder =>
         {
             var versions = directories.Select(path => YearRegex.Match(path).Value).Select(int.Parse);
@@ -83,10 +84,11 @@ sealed partial class Build
 
     static void CompressFolder(AbsolutePath bundleRoot)
     {
-        var bundleName = bundleRoot.WithExtension(".zip");
+        //var bundleName = bundleRoot.WithExtension(".zip");
+        var bundleName = bundleRoot.WithExtension(".bundle.zip");
+
         bundleRoot.CompressTo(bundleName);
         bundleRoot.DeleteDirectory();
-
         Log.Information("Compressing into a Zip: {Name}", bundleName);
     }
 

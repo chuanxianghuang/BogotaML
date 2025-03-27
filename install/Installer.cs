@@ -5,8 +5,8 @@ using WixSharp.CommonTasks;
 using WixSharp.Controls;
 using Assembly = System.Reflection.Assembly;
 
-const string outputName = "BogotaML";
-const string projectName = "BogotaML";
+const string outputName = "BogotaML1";
+const string projectName = "BogotaML1";
 
 var project = new Project
 {
@@ -23,11 +23,15 @@ var project = new Project
     {
         Manufacturer = Environment.UserName,
         //ProductIcon = @"install\Resources\Icons\ShellIcon.ico"
-    }
+    },
+    Language = "zh-cn",
+    LicenceFile = @"install\Resources\SoftwareLicense.rtf",
+
 };
 
+
 var wixEntities = Generator.GenerateWixEntities(args);
-project.RemoveDialogsBetween(NativeDialogs.WelcomeDlg, NativeDialogs.CustomizeDlg);
+//project.RemoveDialogsBetween(NativeDialogs.WelcomeDlg, NativeDialogs.CustomizeDlg);
 
 BuildSingleUserMsi();
 BuildMultiUserUserMsi();
@@ -40,6 +44,7 @@ void BuildSingleUserMsi()
     [
         new InstallDir(@"%AppDataFolder%\Autodesk\Revit\Addins\", wixEntities)
     ];
+  
     project.BuildMsi();
 }
 

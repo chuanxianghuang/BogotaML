@@ -10,8 +10,8 @@ namespace RevitAddIn.ExtensionsUtils
     {
         public static List<Connector> GetConnectors(this FamilyInstance familyInstance)
         {
-            var connectorSet = familyInstance?.MEPModel?.ConnectorManager.Connectors;
-            var connectors = connectorSet?.ToList();
+            var connectorSet = familyInstance?.MEPModel?.ConnectorManager?.Connectors;
+            var connectors = connectorSet?.Cast<Connector>().ToList();
             return connectors;
         }
 

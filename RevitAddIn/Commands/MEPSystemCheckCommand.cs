@@ -24,77 +24,83 @@ namespace RevitAddIn.Commands
         public override void Execute()
         {
             Trace.TraceInformation("MEPSystemCheckCommand");
-
-            var elemSelectionFilter = new ElementSelectionFilter((elem) =>
+            try
             {
-                var instance = elem as FamilyInstance;
-                var condition = instance?.MEPModel?.ConnectorManager != null;
-                if (condition)
+                var elemSelectionFilter = new ElementSelectionFilter((elem) =>
                 {
-                    var familyName = instance.Symbol.FamilyName;
-                    var instanceCategoryId = instance.Category.Id;
-                    var targetCategoryId = Category.GetCategory(Document, BuiltInCategory.OST_ElectricalEquipment).Id;
-                    condition = instanceCategoryId == targetCategoryId && familyName.Contains("ELE_EEQ") /*&& familyName.Contains("BASED")*/;
-                }
-
-                return condition;
-            });
-            var reference = UiDocument.Selection.PickObject(ObjectType.Element, elemSelectionFilter, "Select ELE_EEQ Base Element");
-
-            var baseFamilyInstance = Document.GetElement(reference) as FamilyInstance;
-            var mechanicalSystems = GetMechanicalSystems(baseFamilyInstance);
-            if (mechanicalSystems.Count > 0)
-            {
-                MechanicalSystem mechanicalSystem = mechanicalSystems.FirstOrDefault();
-
-                var elementSet = mechanicalSystem.DuctNetwork;
-                List<ElementId> ids = new List<ElementId>();
-                foreach (Element element in elementSet)
-                {
-                    if (element is FamilyInstance instance)
+                    var instance = elem as FamilyInstance;
+                    var condition = instance?.MEPModel?.ConnectorManager != null;
+                    if (condition)
                     {
-                        var connectorList = instance.GetConnectors();
-                        foreach (var connector in connectorList)
+                        var familyName = instance.Symbol.FamilyName;
+                        var instanceCategoryId = instance.Category.Id;
+                        var targetCategoryId = Category.GetCategory(Document, BuiltInCategory.OST_ElectricalEquipment).Id;
+                        condition = instanceCategoryId == targetCategoryId && familyName.Contains("ELE_EEQ") /*&& familyName.Contains("BASED")*/;
+                    }
+
+                    return condition;
+                });
+
+                var reference = UiDocument.Selection.PickObject(ObjectType.Element, elemSelectionFilter, "Select ELE_EEQ Base Element");
+
+                var baseFamilyInstance = Document.GetElement(reference) as FamilyInstance;
+                var mechanicalSystems = GetMechanicalSystems(baseFamilyInstance);
+                if (mechanicalSystems.Count > 0)
+                {
+                    MechanicalSystem mechanicalSystem = mechanicalSystems.FirstOrDefault();
+
+                    var elementSet = mechanicalSystem.DuctNetwork;
+                    List<ElementId> ids = new List<ElementId>();
+                    foreach (Element element in elementSet)
+                    {
+                        if (element is FamilyInstance instance)
                         {
-                            if (connector.IsConnected)
+                            var connectorList = instance.GetConnectors();
+                            foreach (var connector in connectorList)
                             {
-                                var allRefConnectors = connector.AllRefs.ToList();
-                                foreach (var allRefConnector in allRefConnectors)
+                                if (connector.IsConnected)
                                 {
-                                    if (allRefConnector.Owner is not MEPSystem)
+                                    var allRefConnectors = connector.AllRefs;
+                                    foreach (Connector allRefConnector in allRefConnectors)
                                     {
-                                        if (allRefConnector.Origin.DistanceTo(connector.Origin) > 0.01)
+                                        if (allRefConnector.Owner is not MEPSystem)
                                         {
-                                            ids.Add(connector.Owner.Id);
+                                            if (allRefConnector.Origin.DistanceTo(connector.Origin) > 0.01)
+                                            {
+                                                ids.Add(connector.Owner.Id);
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                if (connector.Owner is not MEPSystem)
+                                else
                                 {
-                                    ids.Add(connector.Owner.Id);
-                                }
+                                    if (connector.Owner is not MEPSystem)
+                                    {
+                                        ids.Add(connector.Owner.Id);
+                                    }
 
+                                }
                             }
                         }
                     }
-                } 
 
-                if (ids.Count > 0)
+                    if (ids.Count > 0)
+                    {
+                        var failuresId = FailuresPreprocessor.CheckMEPSystemId;
+                        FailuresPreprocessor.ProcessorFailuresMessage(Document, failuresId, ids);
+
+                        UiDocument.Selection.SetElementIds(ids);
+                        KeysPress.SetESC();
+                    }
+                }
+                else
                 {
-
-                    var failuresId = FailuresPreprocessor.CheckMEPSystemId;
-                    FailuresPreprocessor.ProcessorFailuresMessage(Document, failuresId, ids);
-                    
-                    UiDocument.Selection.SetElementIds(ids);
-                    //KeysPress.SetESC();
+                    TaskDialog.Show("Warning", "No Mechanical System found in the selected element");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                TaskDialog.Show("Warning", "No Mechanical System found in the selected element");
+                Trace.TraceInformation("ex=" + ex.StackTrace);
             }
         }
 
@@ -116,13 +122,11 @@ namespace RevitAddIn.Commands
                         }
                         mechanicalSystems.Add(mechanicalSystem);
                     }
-                    catch   { }
+                    catch { }
                 }
             }
 
             return mechanicalSystems;
         }
-
-       
     }
 }

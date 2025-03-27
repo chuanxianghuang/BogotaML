@@ -9,8 +9,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="WixSharp.bin" Version="1.*"/>
-        <PackageReference Include="WixSharp.wix.bin" Version="3.*"/>
+        <PackageReference Include="WixSharp.bin" Version="1.*" />
+        <PackageReference Include="WixSharp.wix.bin" Version="3.*" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Resources\SoftwareLicense.rtf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
